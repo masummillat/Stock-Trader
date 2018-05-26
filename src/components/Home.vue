@@ -1,10 +1,23 @@
 <template>
-  <h1>The Home Component</h1>
+  <div class="container">
+    <h1>Trade or View your Portfolio</h1>
+    <p>You may Save & load your data</p>
+    <p>Click on End day to begin a new day</p>
+    <hr>
+    <p>Your Funds : {{funds | currency}}</p>
+  </div>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
 export default {
   name: 'Home',
+  computed:{
+    ...mapGetters([
+        'funds'
+    ])
+
+  }
 
 }
 </script>

@@ -5,7 +5,7 @@
         <h3 class="panel-title">
           <!--{{stock.name}}-->
         </h3>
-        <small>(Price: {{stock.price}} | {{stock.quantity}})</small>
+        <small>(Price: {{stock.price | currency}} | {{stock.quantity}})</small>
       </div>
       <div class="panel-body">
         <div class="pull-left">
@@ -15,8 +15,8 @@
           <button
             class="btn btn-success"
             @click="sellStock"
-            :disabled ="quantity<=0 || !Number.isInteger(parseInt(quantity))"
-          >Sell</button>
+            :disabled ="quantity<=0 || insufficientQuantity || !Number.isInteger(parseInt(quantity))"
+          >{{insufficientQuantity ? 'Insufficient order' : 'Sell'}}</button>
         </div>
       </div>
     </div>
@@ -34,16 +34,22 @@
       }
     },
     methods:{
-      ...mapActions([
-          'sellStock',
-      ]),
+      ...mapActions({
+        placeSellOrder:'sellStock'
+      }),
       sellStock(){
           const order ={
               stockId: this.stock.id,
               stockPrice: this.stock.price,
-              quantity: this.quantity
+              quantity: parseInt(this.quantity)
           };
-          this.sellStock();
+          this.placeSellOrder(order);
+          this.quantity=0;
+      }
+    },
+    computed:{
+      insufficientQuantity(){
+          return parseInt(this.quantity) > this.stock.quantity;
       }
     }
   }

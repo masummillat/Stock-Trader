@@ -5,17 +5,22 @@
         <h3 class="panel-title">
           {{stock.name}}
         </h3>
-        <small>(Price: {{stock.price}})</small>
+        <small>(Price: {{stock.price | currency}})</small>
       </div>
       <div class="panel-body">
         <div class="pull-left">
-          <input type="number" class="form-control" placeholder="Quantity" v-model="quantity" >
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Quantity"
+            v-model="quantity" >
         </div>
         <div class="pull-right">
           <button
             class="btn btn-success"
             @click="buyStock"
-            :disabled ="quantity<=0 || !Number.isInteger(parseInt(quantity))">Buy</button>
+            :disabled =" insufficientFunds || quantity<=0 || !Number.isInteger(parseInt(quantity))">
+            {{insufficientFunds ? 'Insufficient Fund' : 'Buy'}}</button>
         </div>
       </div>
     </div>
@@ -36,12 +41,20 @@
             const order = {
                 stockId: this.stock.id,
                 stockPrice: this.stock.price,
-                quantity: this.quantity
+                quantity: parseInt(this.quantity)
 
             }
             this.$store.dispatch('buyStock',order)
             console.log(order)
           this.quantity=0;
+        }
+    },
+    computed:{
+        funds(){
+          return this.$store.getters.funds;
+        },
+        insufficientFunds(){
+            return this.stock.price * parseInt(this.quantity) > this.funds;
         }
     }
   }
